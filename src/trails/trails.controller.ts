@@ -9,7 +9,6 @@ import {
   Put,
   Query,
   UseGuards,
-  UseInterceptors,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -54,7 +53,6 @@ export class TrailsController {
     return this.trailsService.findAll(limit, skip, search);
   }
 
-  @UseGuards(JwtAuthGuard)
   @Get(':id')
   @HttpCode(200)
   @ApiBearerAuth()
