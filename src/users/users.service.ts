@@ -1,11 +1,15 @@
-import { Injectable, UnauthorizedException, BadRequestException, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  UnauthorizedException,
+  BadRequestException,
+  NotFoundException,
+} from '@nestjs/common';
 import { User } from '@prisma/client';
 import { UpdateAdminUserDto } from './dto/update-admin-user.dto';
 import { ConfigService } from '@nestjs/config';
-import * as bcrypt from "bcrypt";
+import * as bcrypt from 'bcrypt';
 import { UsersRepository, SafeUser } from './users.repository';
 import { RegisterAdminUserDto } from './dto/register-admin-user.dto';
-import { isValidObjectId } from '../utils/mongodb-validation';
 
 @Injectable()
 export class UsersService {
@@ -31,12 +35,12 @@ export class UsersService {
 
     const adminCodeFromEnv = this.configService.get<string>('ADMIN_CODE');
     if (!adminCode || !adminCodeFromEnv || adminCode !== adminCodeFromEnv) {
-      throw new UnauthorizedException("Usuário não autorizado.");
+      throw new UnauthorizedException('Usuário não autorizado.');
     }
 
     const userExists = await this.usersRepository.existsByEmail(email);
     if (userExists) {
-      throw new BadRequestException("Usuário já cadastrado.");
+      throw new BadRequestException('Usuário já cadastrado.');
     }
 
     const hashedPassword = await this.hashPassword(password);
@@ -45,18 +49,19 @@ export class UsersService {
       name,
       email,
       password: hashedPassword,
+      role: 'ADMIN',
     });
   }
 
   async updateAdminUser(id: string, updateAdminUserDto: UpdateAdminUserDto) {
     const userExists = await this.usersRepository.existsById(id);
     if (!userExists) {
-      throw new NotFoundException("Usuário não encontrado.");
+      throw new NotFoundException('Usuário não encontrado.');
     }
 
-    const {name, email, password} = updateAdminUserDto
+    const { name, email, password } = updateAdminUserDto;
 
-    let newHashPassword: string | undefined = undefined
+    let newHashPassword: string | undefined = undefined;
     if (password) newHashPassword = await this.hashPassword(password);
 
     return this.usersRepository.update(id, {
@@ -71,7 +76,33 @@ export class UsersService {
     return bcrypt.hash(password, saltRounds);
   }
 
-  async validatePassword(password: string, hashedPassword: string): Promise<boolean> {
+  async validatePassword(
+    password: string,
+    hashedPassword: string,
+  ): Promise<boolean> {
     return bcrypt.compare(password, hashedPassword);
+  }
+
+  async updateResetToken(
+    id: string,
+    resetToken: string,
+    resetTokenExpires: Date,
+  ) {
+    return this.usersRepository.update(id, {
+      resetToken,
+      resetTokenExpires,
+    });
+  }
+
+  async findByResetToken(token: string) {
+    return this.usersRepository.findByResetToken(token);
+  }
+
+  async updatePasswordAndClearToken(id: string, hashedPassword: string) {
+    return this.usersRepository.update(id, {
+      password: hashedPassword,
+      resetToken: null,
+      resetTokenExpires: null,
+    });
   }
 }
