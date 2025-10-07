@@ -3,7 +3,7 @@ import * as nodemailer from 'nodemailer';
 
 @Injectable()
 export class EmailService {
-  private transporter = nodemailer.createTransporter({
+  private transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
       user: process.env.GOOGLE_EMAIL,
