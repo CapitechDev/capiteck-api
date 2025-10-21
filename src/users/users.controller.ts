@@ -132,6 +132,28 @@ export class UsersController {
     return this.usersService.findAll();
   }
 
+  @Get('mobile')
+  @AdminWebOnly()
+  @ApiOperation({
+    summary: 'Listar usuários mobile',
+    description:
+      'Retorna a lista de usuários mobile (role USER) do sistema. Acesso restrito a administradores.',
+  })
+  @ApiBearerAuth()
+  @ApiResponse({
+    status: 200,
+    description: 'Lista de usuários mobile retornada com sucesso',
+    type: [UserProfileResponseDto],
+  })
+  @ApiResponse({ status: 401, description: 'Token inválido ou expirado' })
+  @ApiResponse({
+    status: 403,
+    description: 'Acesso restrito a administradores',
+  })
+  findMobileUsers() {
+    return this.usersService.findMobileUsers();
+  }
+
   @Get('mobile/profile')
   @MobileOnly()
   @ApiOperation({

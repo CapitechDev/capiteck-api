@@ -31,6 +31,10 @@ export class UsersService {
     return this.usersRepository.findAll();
   }
 
+  async findMobileUsers(): Promise<SafeUser[]> {
+    return this.usersRepository.findByRole('USER');
+  }
+
   async createAdminUser(adminUserDto: RegisterAdminUserDto): Promise<SafeUser> {
     const { adminCode, email, password, name } = adminUserDto;
 

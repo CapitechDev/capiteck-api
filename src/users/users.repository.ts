@@ -46,6 +46,22 @@ export class UsersRepository implements IUsersRepository {
     });
   }
 
+  async findByRole(role: string): Promise<SafeUser[]> {
+    return this.prisma.user.findMany({
+      where: { role: role as Role },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        createdAt: true,
+        updatedAt: true,
+        role: true,
+        resetToken: true,
+        resetTokenExpires: true,
+      },
+    });
+  }
+
   async create(data: Prisma.UserCreateInput): Promise<SafeUser> {
     return this.prisma.user.create({
       data,
