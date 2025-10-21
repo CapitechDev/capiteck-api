@@ -18,6 +18,6 @@ export const resetPasswordSchema = Yup.object().shape({
     .min(6, 'A nova senha deve ter pelo menos 6 caracteres')
     .required('A nova senha é obrigatória'),
   confirmPassword: Yup.string()
-    .oneOf([Yup.ref('newPassword'), null], 'As senhas devem corresponder')
+    .oneOf([Yup.ref('newPassword')], 'As senhas devem corresponder')
     .required('A confirmação da senha é obrigatória'),
 });
