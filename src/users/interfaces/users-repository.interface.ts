@@ -10,4 +10,5 @@ export interface IUsersRepository {
   delete(id: string): Promise<SafeUser>;
   existsByEmail(email: string): Promise<boolean>;
   existsById(id: string): Promise<boolean>;
+  findByResetToken(token: string): Promise<User | null>;
 }
