@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { User } from '@prisma/client';
 import { UpdateAdminUserDto } from './dto/update-admin-user.dto';
+import { RegisterMobileUserDto } from './dto/register-mobile-user.dto';
 import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcrypt';
 import { UsersRepository, SafeUser } from './users.repository';
@@ -50,6 +51,26 @@ export class UsersService {
       email,
       password: hashedPassword,
       role: 'ADMIN',
+    });
+  }
+
+  async createMobileUser(
+    mobileUserDto: RegisterMobileUserDto,
+  ): Promise<SafeUser> {
+    const { email, password, name } = mobileUserDto;
+
+    const userExists = await this.usersRepository.existsByEmail(email);
+    if (userExists) {
+      throw new BadRequestException('Usuário já cadastrado.');
+    }
+
+    const hashedPassword = await this.hashPassword(password);
+
+    return this.usersRepository.create({
+      name,
+      email,
+      password: hashedPassword,
+      role: 'USER', // Role padrão para usuários mobile
     });
   }
 

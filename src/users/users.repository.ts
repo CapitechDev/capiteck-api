@@ -25,6 +25,8 @@ export class UsersRepository implements IUsersRepository {
         createdAt: true,
         updatedAt: true,
         role: true,
+        resetToken: true,
+        resetTokenExpires: true,
       },
     });
   }
@@ -38,6 +40,8 @@ export class UsersRepository implements IUsersRepository {
         createdAt: true,
         updatedAt: true,
         role: true,
+        resetToken: true,
+        resetTokenExpires: true,
       },
     });
   }
@@ -52,6 +56,8 @@ export class UsersRepository implements IUsersRepository {
         createdAt: true,
         updatedAt: true,
         role: true,
+        resetToken: true,
+        resetTokenExpires: true,
       },
     });
   }
@@ -67,6 +73,8 @@ export class UsersRepository implements IUsersRepository {
         createdAt: true,
         updatedAt: true,
         role: true,
+        resetToken: true,
+        resetTokenExpires: true,
       },
     });
   }
@@ -81,6 +89,8 @@ export class UsersRepository implements IUsersRepository {
         createdAt: true,
         updatedAt: true,
         role: true,
+        resetToken: true,
+        resetTokenExpires: true,
       },
     });
   }
@@ -101,7 +111,7 @@ export class UsersRepository implements IUsersRepository {
     return !!user;
   }
 
-  async findByResetToken(token: string): Promise<SafeUser> {
+  async findByResetToken(token: string): Promise<User | null> {
     return this.prisma.user.findUnique({
       where: { resetToken: token },
     });
