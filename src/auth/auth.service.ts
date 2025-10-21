@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { User } from '@prisma/client';
 import { UsersService } from 'src/users/users.service';
+import { EmailService } from 'src/email/email.service';
 import * as bcrypt from 'bcrypt';
 import { generateRandomToken } from 'src/utils/generate-token';
 @Injectable()
@@ -23,12 +24,17 @@ export class AuthService {
   }
 
   async login(user: Omit<User, 'password'>) {
-    const payload = { username: user.name, sub: user.id };
+    const payload = {
+      username: user.name,
+      sub: user.id,
+      role: user.role,
+    };
     return {
       user: {
         id: user.id,
         email: user.email,
         name: user.name,
+        role: user.role,
       },
       token: this.jwtService.sign(payload),
     };
@@ -63,7 +69,10 @@ export class AuthService {
     }
 
     // Verificar se o token não expirou
-    if (new Date() > new Date(user.resetTokenExpires)) {
+    if (
+      !user.resetTokenExpires ||
+      new Date() > new Date(user.resetTokenExpires)
+    ) {
       throw new Error('Reset token has expired');
     }
 

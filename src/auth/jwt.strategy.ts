@@ -1,4 +1,3 @@
-
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
@@ -21,10 +20,11 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       throw new UnauthorizedException('Usuário não encontrado.');
     }
 
-    return { 
-      userId: user.id, 
+    return {
+      userId: user.id,
       username: user.name,
-      email: user.email 
+      email: user.email,
+      role: user.role,
     };
   }
 }
