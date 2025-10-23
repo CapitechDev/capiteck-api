@@ -61,7 +61,7 @@ export class UsersController {
     return this.usersService.createAdminUser(registerAdminUserDto);
   }
 
-  @Post('mobile')
+  @Post('register/mobile')
   @HttpCode(201)
   @Public()
   @ApiOperation({

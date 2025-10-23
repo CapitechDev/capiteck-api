@@ -20,6 +20,9 @@ export class UsersService {
   ) {}
 
   async findOneByEmail(email: string): Promise<User | null> {
+    if (!email) {
+      throw new BadRequestException('Email inválido');
+    }
     return this.usersRepository.findByEmail(email);
   }
 

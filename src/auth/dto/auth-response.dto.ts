@@ -1,16 +1,21 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { IsEmail, IsNotEmpty, IsString, Length } from 'class-validator';
 
 export class LoginRequestDto {
   @ApiProperty({
     example: 'joao@example.com',
     description: 'Email do usuário',
   })
+  @IsEmail()
+  @IsNotEmpty()
   email: string;
 
   @ApiProperty({
     example: 'senha123',
     description: 'Senha do usuário',
   })
+  @IsString()
+  @IsNotEmpty()
   password: string;
 }
 
@@ -43,6 +48,8 @@ export class ForgotPasswordRequestDto {
     example: 'joao@example.com',
     description: 'Email do usuário para recuperação de senha',
   })
+  @IsEmail()
+  @IsNotEmpty()
   email: string;
 }
 
@@ -59,12 +66,18 @@ export class ResetPasswordRequestDto {
     example: 'A7B2X9',
     description: 'Token de 6 dígitos recebido por email',
   })
+  @IsString()
+  @IsNotEmpty()
+  @Length(6, 10)
   token: string;
 
   @ApiProperty({
     example: 'novaSenha123',
     description: 'Nova senha do usuário',
   })
+  @IsString()
+  @IsNotEmpty()
+  @Length(6, 128)
   newPassword: string;
 }
 
