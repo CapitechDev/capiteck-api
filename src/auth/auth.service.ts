@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { User } from '@prisma/client';
-import { UsersService } from 'src/users/users.service';
-import { EmailService } from 'src/email/email.service';
+import { UsersService } from '../users/users.service';
+import { EmailService } from '../email/email.service';
 import * as bcrypt from 'bcrypt';
-import { generateRandomToken } from 'src/utils/generate-token';
+import { generateRandomToken } from '../utils/generate-token';
 @Injectable()
 export class AuthService {
   constructor(
