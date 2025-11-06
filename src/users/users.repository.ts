@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from 'src/prisma/prisma.service';
-import { User, Prisma } from '@prisma/client';
+import { PrismaService } from '../prisma/prisma.service';
+import { User, Prisma, Role } from '@prisma/client';
 import { IUsersRepository } from './interfaces/users-repository.interface';
 
 export type SafeUser = Omit<User, 'password'>;
@@ -10,13 +10,14 @@ export class UsersRepository implements IUsersRepository {
   constructor(private prisma: PrismaService) {}
 
   async findByEmail(email: string): Promise<User | null> {
-    return this.prisma.user.findUnique({ 
-      where: { email }
+    if (!email) return null;
+    return this.prisma.user.findUnique({
+      where: { email },
     });
   }
 
   async findById(id: string): Promise<SafeUser | null> {
-    return this.prisma.user.findUnique({ 
+    return this.prisma.user.findUnique({
       where: { id },
       select: {
         id: true,
@@ -24,7 +25,10 @@ export class UsersRepository implements IUsersRepository {
         name: true,
         createdAt: true,
         updatedAt: true,
-      }
+        role: true,
+        resetToken: true,
+        resetTokenExpires: true,
+      },
     });
   }
 
@@ -36,12 +40,31 @@ export class UsersRepository implements IUsersRepository {
         name: true,
         createdAt: true,
         updatedAt: true,
-      }
+        role: true,
+        resetToken: true,
+        resetTokenExpires: true,
+      },
+    });
+  }
+
+  async findByRole(role: string): Promise<SafeUser[]> {
+    return this.prisma.user.findMany({
+      where: { role: role as Role },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        createdAt: true,
+        updatedAt: true,
+        role: true,
+        resetToken: true,
+        resetTokenExpires: true,
+      },
     });
   }
 
   async create(data: Prisma.UserCreateInput): Promise<SafeUser> {
-    return this.prisma.user.create({ 
+    return this.prisma.user.create({
       data,
       select: {
         id: true,
@@ -49,7 +72,10 @@ export class UsersRepository implements IUsersRepository {
         name: true,
         createdAt: true,
         updatedAt: true,
-      }
+        role: true,
+        resetToken: true,
+        resetTokenExpires: true,
+      },
     });
   }
 
@@ -63,7 +89,10 @@ export class UsersRepository implements IUsersRepository {
         name: true,
         createdAt: true,
         updatedAt: true,
-      }
+        role: true,
+        resetToken: true,
+        resetTokenExpires: true,
+      },
     });
   }
 
@@ -76,14 +105,17 @@ export class UsersRepository implements IUsersRepository {
         name: true,
         createdAt: true,
         updatedAt: true,
-      }
+        role: true,
+        resetToken: true,
+        resetTokenExpires: true,
+      },
     });
   }
 
   async existsByEmail(email: string): Promise<boolean> {
     const user = await this.prisma.user.findUnique({
       where: { email },
-      select: { id: true }
+      select: { id: true },
     });
     return !!user;
   }
@@ -91,8 +123,14 @@ export class UsersRepository implements IUsersRepository {
   async existsById(id: string): Promise<boolean> {
     const user = await this.prisma.user.findUnique({
       where: { id },
-      select: { id: true }
+      select: { id: true },
     });
     return !!user;
+  }
+
+  async findByResetToken(token: string): Promise<User | null> {
+    return this.prisma.user.findUnique({
+      where: { resetToken: token },
+    });
   }
 }
