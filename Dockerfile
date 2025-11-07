@@ -22,13 +22,8 @@ RUN yarn cache clean
 
 ARG PORT
 
-ARG DATABASE_URL
-
 ENV PORT=${PORT}
 
-ENV DATABASE_URL=${DATABASE_URL}
-
-# Expor a porta que a aplicação irá rodar
 EXPOSE ${PORT}
 
 # Comando para iniciar a aplicação
