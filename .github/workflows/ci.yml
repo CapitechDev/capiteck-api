@@ -31,3 +31,41 @@ jobs:
         run: yarn test --watchAll=false
         env:
           CI: true
+
+      - name: Extract repository name
+        id: repo-name
+        run: echo "REPO_NAME=$(echo ${GITHUB_REPOSITORY} | cut -d '/' -f 2)" >> $GITHUB_ENV
+
+      - name: Set environment variables for production
+        if: github.ref_name == 'main'
+        run: echo "APP_PORT=${{ secrets.APP_PORT_PROD }}" >> $GITHUB_ENV
+
+      - name: SSH deploy
+        if: github.ref_name == 'main'
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_KEY}}
+          script: |
+            cd capitech/${{ env.REPO_NAME }}
+            git pull https://${{ secrets.GIT_TOKEN }}@github.com/CapitechDev/${{ env.REPO_NAME }}.git ${{ github.ref_name }}
+
+            docker stop ${{ env.REPO_NAME }} || true
+            docker rm ${{ env.REPO_NAME }} || true
+            docker rmi ${{ env.REPO_NAME }}:${{ env.APP_PORT }} || true
+
+            echo "🐳 Buildando nova imagemI..."
+            docker build --no-cache -t ${{ env.REPO_NAME }}:${{ env.APP_PORT }} .
+
+            echo "🚀 Subindo novo container"
+            docker run -d \
+              --name ${{ env.REPO_NAME }} \
+              -e TZ=America/Sao_Paulo \
+              -v /etc/localtime:/etc/localtime:ro \
+              -v /etc/timezone:/etc/timezone:ro \
+              -p ${{ env.APP_PORT }}:${{ env.APP_PORT }} \
+              --restart always \
+              ${{ env.REPO_NAME }}:${{ env.APP_PORT }}
+
+
