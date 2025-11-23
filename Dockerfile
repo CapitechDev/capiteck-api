@@ -5,11 +5,11 @@ RUN apk add --no-cache openssl
 # Definir o diretório de trabalho
 WORKDIR /app
 
-# Copiar package.json e package-lock.json
-COPY package*.json ./
+# Copiar package.json e yarn.lock
+COPY package.json yarn.lock ./
 
 # Instalar dependências
-RUN yarn install
+RUN yarn install --frozen-lockfile
 
 # Copiar o restante do código da aplicação
 COPY . .
