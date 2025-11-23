@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from '../prisma/prisma.service';
 import { User, Prisma, Trail } from '@prisma/client';
 import { ITrailsRepository } from './interfaces/trails-repository.interface';
 
@@ -89,7 +89,7 @@ export class TrailsRepository implements ITrailsRepository {
 
   async delete(id: string): Promise<void> {
     await this.prisma.trail.delete({
-      where: {id}
-    })
+      where: { id },
+    });
   }
 }
